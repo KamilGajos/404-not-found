@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Infinite Grid • Circles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #0a0a0b;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .grid-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            /* Bardzo ciemne tło */
+            overflow: hidden;
+            touch-action: none;
+            cursor: grab;
+        }
+
+        .grid-container:active {
+            cursor: grabbing;
+        }
+
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Stylizacja suwaka */
+        input[type=range]::-webkit-slider-thumb {
+            pointer-events: all;
+            width: 24px;
+            height: 24px;
+            -webkit-appearance: none;
+            @apply shadow-sm;
+        }
+
+        /* Zmień te style: */
+        .grid-item div {
+            transition: transform 1000ms cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+
+        .grid-item div.scale-down {
+            transform: scale(0);
+            transition-delay: 0s;
+        }
+
+        .grid-item div.scale-up {
+            transform: scale(1);
+            transition-delay: 0s;
+        }
+
+        /* Dodaj do sekcji <style> */
+        #imagePanel button {
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        #imagePanel button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animacja dla ikon */
+        #imagePanel svg {
+            transition: transform 0.2s ease;
+        }
+
+        #imagePanel button:hover svg {
+            transform: scale(1.1);
+        }
+
+
+        .imgclosed {
+            margin-left: -500px !important;
+        }
+
+        .imgopen {
+            margin-left: 10px !important;
+        }
+
+        /* Dodaj do istniejącego CSS */
+        #imagePanel {
+            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #panelImage {
+            transition: opacity 0.3s ease;
+        }
+
+        #panelImage.loading {
+            opacity: 0.5;
+        }
+
+        /* Efekt dla aktywnego ulubionego */
+        #favoriteBtn.active svg {
+            fill: #ef4444;
+            stroke: #ef4444;
+        }
+    </style>
+</head>
+
+<body class="no-select text-white">
+    <div class="absolute top-4 left-4 z-50 flex items-center gap-3">
+        <!-- Search Bar -->
+        <div class="bg-black/60 backdrop-blur-xl rounded-full border border-white/10 shadow-2xl">
+            <div class="flex items-center px-4 py-2 gap-3 min-w-[300px]">
+                <!-- Search Icon -->
+                <svg class="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <!-- Input -->
+                <input type="text" id="searchInput" placeholder="Search images..." class="bg-transparent text-white placeholder-white/50 outline-none flex-1 text-sm" />
+                <!-- Clear Button (visible when input has text) -->
+                <button id="clearSearchBtn" class="hidden text-white/50 hover:text-white transition-colors" title="Clear search">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Counter -->
+        <div class="bg-black/60 backdrop-blur-xl rounded-full border border-white/10 shadow-2xl">
+            <div class="flex items-center justify-between px-4 py-2 gap-4 min-w-[180px]">
+                <!-- Results Text -->
+                <div class="text-white text-sm font-medium flex items-center">
+                    <span id="resultsCount">300</span>
+                    <span class="text-white/70 ml-1">Results</span>
+                </div>
+
+                <!-- Separator -->
+                <div class="h-4 w-px bg-white/10"></div>
+
+                <!-- Clear Filter Button -->
+                <button id="clearFilterBtn" class="text-white/50 hover:text-white transition-colors text-sm font-medium opacity-70 hover:opacity-100 hover:scale-105 active:scale-95">
+                    Clear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls Panel -->
+    <div class="absolute right-6 top-1/2 transform -translate-y-1/2 z-50">
+        <div class="bg-black/60 backdrop-blur-xl rounded-full py-6 px-3 border border-white/10 shadow-2xl flex flex-col items-center gap-4 w-[60px]">
+
+            <!-- Icon Large (Top) -->
+            <div class="opacity-70">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                </svg>
+            </div>
+
+            <!-- Vertical Slider Container -->
+            <div class="relative h-[200px] w-full flex justify-center">
+                <!-- Visual Track -->
+                <div class="absolute w-1 h-full bg-white/10 rounded-full"></div>
+                <!-- Interactive Input -->
+                <input type="range" id="gridSizeSlider" min="100" max="400" value="200" orient="vertical" class="absolute w-full h-full opacity-0 cursor-pointer z-20" style="writing-mode: bt-lr; -webkit-appearance: slider-vertical;">
+                <!-- Visual Thumb (Updated via JS) -->
+                <div id="sliderThumbVisual" class="absolute w-6 h-6 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] border-2 border-gray-200 pointer-events-none z-10 top-1/2 -translate-y-1/2 transition-all duration-75"></div>
+            </div>
+
+            <!-- Icon Small (Bottom) -->
+            <div class="opacity-70">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                </svg>
+            </div>
+
+            <!-- Separator -->
+            <div class="w-full h-px bg-white/10 my-1"></div>
+
+            <!-- Reset Button -->
+            <button id="resetBtn" class="p-2 hover:bg-white/10 rounded-full transition-colors active:scale-95 text-white/80 hover:text-white">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                </svg>
+            </button>
+        </div>
+    </div>
+    <!-- Image Panel -->
+    <div id="imagePanel" class="absolute left-0 top-1/2 transform -translate-y-1/2 z-50 w-[40vw] max-w-[500px] m-2 imgclosed">
+        <div class="bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border-l border-white/20 flex flex-col h-[70vh] overflow-hidden">
+
+            <!-- Image Container -->
+            <div class="flex-1 p-2 overflow-hidden">
+                <div class="relative w-full h-full mb-4 rounded-xl overflow-hidden bg-gray-100/50 flex items-center justify-center">
+                    <img id="panelImage" src="img/1.png" alt="" class="max-w-full max-h-full object-contain">
+
+                    <!-- Close Button -->
+                    <button id="closePanelBtn" class="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6 6 18"></path>
+                            <path d="m6 6 12 12"></path>
+                        </svg>
+                    </button>
+
+                    <div class="absolute bottom-48 right-2">
+                        <!-- Favorite Button -->
+                        <button id="favoriteBtn" class="absolute bottom-48 right-2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                            </svg>
+                        </button>
+
+                        <!-- Share Button -->
+                        <button id="shareBtn" class="absolute bottom-36 right-2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="18" cy="5" r="3" />
+                                <circle cx="6" cy="12" r="3" />
+                                <circle cx="18" cy="19" r="3" />
+                                <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" />
+                            </svg>
+                        </button>
+
+                        <!-- Download Button -->
+                        <button id="downloadBtn" class="absolute bottom-24 right-2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- File name -->
+                    <div class="absolute w-full bottom-0  bg-gradient-to-t from-black/20 to-transparent p-3">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid Container -->
+    <div class="grid-container" id="gridContainer">
+        <div id="gridContent" class="absolute inset-0 will-change-transform"></div>
+    </div>
+
+    <script>
+        /**
+         * Infinite Grid Logic
+         */
+        class InfiniteGrid {
+            constructor(containerId, options = {}) {
+                this.container = document.getElementById(containerId);
+                this.gridContent = document.getElementById('gridContent');
+
+                // Config
+                this.gridSize = options.gridSize || 200;
+                this.renderItem = options.renderItem;
+                this.imageCount = options.imageCount || 49;
+
+                // Physics constants
+                this.friction = 0.92;
+                this.minVelocity = 0.1;
+
+                // State
+                this.offset = {
+                    x: 0,
+                    y: 0
+                };
+                this.velocity = {
+                    x: 0,
+                    y: 0
+                };
+                this.isDragging = false;
+                this.lastMousePos = {
+                    x: 0,
+                    y: 0
+                };
+
+                // Items cache
+                this.renderedItems = new Map();
+
+                // Bindings
+                this.animate = this.animate.bind(this);
+                this.handleStart = this.handleStart.bind(this);
+                this.handleMove = this.handleMove.bind(this);
+                this.handleEnd = this.handleEnd.bind(this);
+                this.handleWheel = this.handleWheel.bind(this);
+                this.resize = this.resize.bind(this);
+
+                this.init();
+            }
+
+            init() {
+                // Event Listeners
+                window.addEventListener('resize', this.resize);
+                this.container.addEventListener('mousedown', this.handleStart);
+                this.container.addEventListener('touchstart', (e) => this.handleStart(e.touches[0]), {
+                    passive: false
+                });
+
+                window.addEventListener('mousemove', this.handleMove);
+                window.addEventListener('touchmove', (e) => this.handleMove(e.touches[0]), {
+                    passive: false
+                });
+
+                window.addEventListener('mouseup', this.handleEnd);
+                window.addEventListener('touchend', this.handleEnd);
+
+                this.container.addEventListener('wheel', this.handleWheel, {
+                    passive: false
+                });
+
+                // Start Loop
+                requestAnimationFrame(this.animate);
+
+                // Initial render force
+                this.updateGrid();
+            }
+
+            // --- Physics & Animation Loop ---
+
+            animate() {
+                let needsUpdate = false;
+
+                // Apply Velocity (Inertia)
+                if (!this.isDragging && (Math.abs(this.velocity.x) > this.minVelocity || Math.abs(this.velocity.y) > this.minVelocity)) {
+                    this.offset.x += this.velocity.x;
+                    this.offset.y += this.velocity.y;
+
+                    this.velocity.x *= this.friction;
+                    this.velocity.y *= this.friction;
+
+                    needsUpdate = true;
+                } else if (!this.isDragging) {
+                    this.velocity.x = 0;
+                    this.velocity.y = 0;
+                }
+
+                // Apply Transform
+                if (needsUpdate || this.isDragging) {
+                    this.gridContent.style.transform = `translate3d(${this.offset.x}px, ${this.offset.y}px, 0)`;
+                    this.updateGrid();
+                }
+
+                requestAnimationFrame(this.animate);
+            }
+
+            // --- Core Grid Logic ---
+
+            updateGrid() {
+                const rect = this.container.getBoundingClientRect();
+                const cols = Math.ceil(rect.width / this.gridSize) + 2;
+                const rows = Math.ceil(rect.height / this.gridSize) + 2;
+
+                const startCol = Math.floor(-this.offset.x / this.gridSize) - 1;
+                const startRow = Math.floor(-this.offset.y / this.gridSize) - 1;
+
+                const visibleKeys = new Set();
+
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const x = startCol + c;
+                        const y = startRow + r;
+                        const key = `${x},${y}`;
+                        visibleKeys.add(key);
+
+                        if (!this.renderedItems.has(key)) {
+                            this.createItem(x, y, key);
+                        }
+                    }
+                }
+
+                // Cleanup invisible items
+                for (const [key, element] of this.renderedItems) {
+                    if (!visibleKeys.has(key)) {
+                        element.remove();
+                        this.renderedItems.delete(key);
+                    }
+                }
+            }
+
+            createItem(gx, gy, key) {
+                const el = document.createElement('div');
+                el.className = 'absolute flex items-center justify-center grid-item';
+
+                // Position based on grid coordinates
+                el.style.left = `${gx * this.gridSize}px`;
+                el.style.top = `${gy * this.gridSize}px`;
+                el.style.width = `${this.gridSize}px`;
+                el.style.height = `${this.gridSize}px`;
+
+                // Render content
+                const content = this.renderItem(gx, gy);
+                el.appendChild(content);
+
+                // Add to DOM
+                this.gridContent.appendChild(el);
+                this.renderedItems.set(key, el);
+
+                // Apply animation to the IMAGE CONTAINER (not the grid item)
+                // Get the container div that holds the image
+                const imgContainer = content;
+                if (imgContainer) {
+                    // Add animation classes
+                    imgContainer.classList.add('scale-down');
+
+                    // Force reflow
+                    void imgContainer.offsetWidth;
+
+                    // Animate in after a tiny delay
+                    setTimeout(() => {
+                        imgContainer.classList.remove('scale-down');
+                        imgContainer.classList.add('scale-up');
+
+                        // Clean up after animation
+                        setTimeout(() => {
+                            if (imgContainer.classList.contains('scale-up')) {
+                                imgContainer.classList.remove('scale-up');
+                            }
+                        }, 300);
+                    }, 50);
+                }
+            }
+
+            // --- Interaction Handlers ---
+
+            handleStart(point) {
+                const clientX = point.clientX;
+                const clientY = point.clientY;
+
+                this.isDragging = true;
+                this.lastMousePos = {
+                    x: clientX,
+                    y: clientY
+                };
+                this.velocity = {
+                    x: 0,
+                    y: 0
+                };
+                this.container.style.cursor = 'grabbing';
+            }
+
+            handleMove(point) {
+                if (!this.isDragging) return;
+
+                if (event.type === 'touchmove') event.preventDefault();
+
+                const clientX = point.clientX;
+                const clientY = point.clientY;
+
+                const dx = clientX - this.lastMousePos.x;
+                const dy = clientY - this.lastMousePos.y;
+
+                this.offset.x += dx;
+                this.offset.y += dy;
+
+                this.velocity = {
+                    x: dx,
+                    y: dy
+                };
+
+                this.lastMousePos = {
+                    x: clientX,
+                    y: clientY
+                };
+
+                this.gridContent.style.transform = `translate3d(${this.offset.x}px, ${this.offset.y}px, 0)`;
+                this.updateGrid();
+            }
+
+            handleEnd() {
+                this.isDragging = false;
+                this.container.style.cursor = 'grab';
+            }
+
+            handleWheel(e) {
+                e.preventDefault();
+                this.offset.x -= e.deltaX;
+                this.offset.y -= e.deltaY;
+                this.velocity = {
+                    x: 0,
+                    y: 0
+                };
+                this.gridContent.style.transform = `translate3d(${this.offset.x}px, ${this.offset.y}px, 0)`;
+                this.updateGrid();
+            }
+
+            // --- Public API ---
+
+            setGridSize(newSize) {
+                this.gridSize = parseInt(newSize);
+                this.gridContent.innerHTML = '';
+                this.renderedItems.clear();
+                this.updateGrid();
+            }
+
+            reset() {
+                this.offset = {
+                    x: 0,
+                    y: 0
+                };
+                this.velocity = {
+                    x: 0,
+                    y: 0
+                };
+                this.gridContent.style.transform = `translate3d(0, 0, 0)`;
+                this.updateGrid();
+            }
+
+            resize() {
+                this.updateGrid();
+            }
+        }
+
+        // Image Panel Manager
+        class ImagePanel {
+            constructor() {
+                this.panel = document.getElementById('imagePanel');
+                this.panelImage = document.getElementById('panelImage');
+                this.closePanelBtn = document.getElementById('closePanelBtn');
+                this.favoriteBtn = document.getElementById('favoriteBtn');
+                this.shareBtn = document.getElementById('shareBtn');
+                this.downloadBtn = document.getElementById('downloadBtn');
+
+                this.currentImageIndex = null;
+                this.isOpen = false;
+
+                this.init();
+            }
+
+            init() {
+                // Close panel button
+                this.closePanelBtn.addEventListener('click', () => this.close());
+
+                // Favorite button
+                this.favoriteBtn.addEventListener('click', () => this.toggleFavorite());
+
+                // Share button
+                this.shareBtn.addEventListener('click', () => this.shareImage());
+
+                // Download button
+                this.downloadBtn.addEventListener('click', () => this.downloadImage());
+
+                // Close panel when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (this.isOpen && !this.panel.contains(e.target) &&
+                        !e.target.closest('.grid-item') &&
+                        !e.target.closest('.grid-item img')) {
+                        this.close();
+                    }
+                });
+
+                // Close with Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.isOpen) {
+                        this.close();
+                    }
+                });
+            }
+
+            open(imageIndex) {
+                this.currentImageIndex = imageIndex;
+
+                // Update the image in panel
+                this.panelImage.src = `img/${imageIndex}.png`;
+                this.panelImage.alt = `Image ${imageIndex}`;
+
+                // Show panel with animation
+                this.panel.classList.remove('imgclosed');
+                this.panel.classList.add('imgopen');
+                this.isOpen = true;
+
+                // Update favorite button state
+                this.updateFavoriteButton();
+
+                // Add to history (optional)
+                this.addToHistory(imageIndex);
+            }
+
+            close() {
+                this.panel.classList.remove('imgopen');
+                this.panel.classList.add('imgclosed');
+                this.isOpen = false;
+            }
+
+            toggleFavorite() {
+                // Get current favorites from localStorage
+                let favorites = JSON.parse(localStorage.getItem('imageFavorites')) || [];
+
+                if (favorites.includes(this.currentImageIndex)) {
+                    // Remove from favorites
+                    favorites = favorites.filter(id => id !== this.currentImageIndex);
+                    this.favoriteBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+            `;
+                } else {
+                    // Add to favorites
+                    favorites.push(this.currentImageIndex);
+                    this.favoriteBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+            `;
+                }
+
+                // Save to localStorage
+                localStorage.setItem('imageFavorites', JSON.stringify(favorites));
+
+                // Animation feedback
+                this.favoriteBtn.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    this.favoriteBtn.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            updateFavoriteButton() {
+                // Get current favorites
+                const favorites = JSON.parse(localStorage.getItem('imageFavorites')) || [];
+
+                if (favorites.includes(this.currentImageIndex)) {
+                    this.favoriteBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+            `;
+                } else {
+                    this.favoriteBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+            `;
+                }
+            }
+
+            shareImage() {
+                const imageUrl = window.location.origin + `/img/${this.currentImageIndex}.png`;
+
+                // Try Web Share API first
+                if (navigator.share) {
+                    navigator.share({
+                        title: `Image ${this.currentImageIndex}`,
+                        text: 'Check out this image from Infinite Grid!',
+                        url: imageUrl,
+                    });
+                } else {
+                    // Fallback: copy to clipboard
+                    navigator.clipboard.writeText(imageUrl).then(() => {
+                        // Show feedback
+                        const originalHTML = this.shareBtn.innerHTML;
+                        this.shareBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                `;
+                        setTimeout(() => {
+                            this.shareBtn.innerHTML = originalHTML;
+                        }, 1000);
+                    });
+                }
+            }
+
+            downloadImage() {
+                const imageUrl = `img/${this.currentImageIndex}.png`;
+                const link = document.createElement('a');
+                link.href = imageUrl;
+                link.download = `${this.currentImageIndex}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Animation feedback
+                this.downloadBtn.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    this.downloadBtn.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            addToHistory(imageIndex) {
+                let history = JSON.parse(localStorage.getItem('imageHistory')) || [];
+                history = history.filter(id => id !== imageIndex); // Remove if already exists
+                history.unshift(imageIndex); // Add to beginning
+                history = history.slice(0, 10); // Keep only last 10
+                localStorage.setItem('imageHistory', JSON.stringify(history));
+            }
+        }
+
+        // Search Manager
+        class SearchManager {
+            constructor() {
+                this.searchInput = document.getElementById('searchInput');
+                this.clearSearchBtn = document.getElementById('clearSearchBtn');
+                this.clearFilterBtn = document.getElementById('clearFilterBtn');
+                this.resultsCount = document.getElementById('resultsCount');
+
+                this.init();
+            }
+
+            init() {
+                // Search input events
+                this.searchInput.addEventListener('input', (e) => this.handleSearch(e));
+                this.searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.performSearch();
+                });
+
+                // Clear buttons events
+                this.clearSearchBtn.addEventListener('click', () => this.clearSearch());
+                this.clearFilterBtn.addEventListener('click', () => this.clearFilters());
+
+                // Show/hide clear button based on input
+                this.searchInput.addEventListener('input', () => {
+                    if (this.searchInput.value.trim()) {
+                        this.clearSearchBtn.classList.remove('hidden');
+                    } else {
+                        this.clearSearchBtn.classList.add('hidden');
+                    }
+                });
+            }
+
+            handleSearch(e) {
+                const query = e.target.value.trim();
+
+                // Debounce search
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => {
+                    if (query.length > 0) {
+                        this.performSearch(query);
+                    } else {
+                        this.clearSearch();
+                    }
+                }, 300);
+            }
+
+            performSearch(query = null) {
+                const searchQuery = query || this.searchInput.value.trim();
+
+                if (!searchQuery) {
+                    this.clearSearch();
+                    return;
+                }
+
+                // Update UI
+                this.searchInput.classList.add('searching');
+                this.resultsCount.textContent = '42'; // Przykładowa liczba wyników
+            }
+
+            clearSearch() {
+                this.searchInput.value = '';
+                this.clearSearchBtn.classList.add('hidden');
+                this.resultsCount.textContent = '300'; // Przywróć domyślną liczbę
+                this.searchInput.classList.remove('searching');
+
+                console.log('Search cleared');
+            }
+
+            clearFilters() {
+                this.clearSearch();
+                // Feedback wizualny
+                this.clearFilterBtn.style.opacity = '0.5';
+                setTimeout(() => {
+                    this.clearFilterBtn.style.opacity = '0.7';
+                }, 200);
+
+                console.log('All filters cleared');
+            }
+        }
+
+        // --- Initialization ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+    
+    function getImageIndexFromCoords(x, y, imageCount) {
+        const hash = Math.abs((x * 73856093) ^ (y * 19349663)) % 1000000;
+        return (hash % imageCount) + 1;
+    }
+
+    // 1. Setup Grid
+    const grid = new InfiniteGrid('gridContainer', {
+        gridSize: 200,
+        imageCount: 49,
+        renderItem: (x, y) => {
+            // Container for circle - THIS IS WHAT GETS ANIMATED
+            const container = document.createElement('div');
+            container.className = 'w-[50%] h-[50%] gap-12 flex items-center justify-center transition-opacity duration-500';
+
+            const img = document.createElement('img');
+            img.className = 'w-[80%] h-[80%]  object-cover pointer-events-none cursor-pointer';
+
+            const imageIndex = getImageIndexFromCoords(x, y, 49);
+
+            img.src = `img/${imageIndex}.png`;
+            img.alt = `Image ${imageIndex}`;
+            img.loading = "lazy";
+            
+            // Store image index as data attribute for easy access
+            img.dataset.imageIndex = imageIndex;
+
+            img.onload = () => {
+                container.classList.remove('opacity-0');
+                container.classList.add('opacity-100');
+            };
+
+            img.onerror = () => {
+                console.warn(`Image img/${imageIndex}.png failed to load`);
+                const fallback = document.createElement('div');
+                fallback.className = 'w-[80%] h-[80%] rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center cursor-pointer';
+                fallback.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-sm text-gray-400">${imageIndex}</div>
+                    </div>
+                `;
+                fallback.dataset.imageIndex = imageIndex;
+                container.innerHTML = '';
+                container.appendChild(fallback);
+            };
+
+            container.appendChild(img);
+            
+            // Dodaj event listener na kontenerze zamiast na obrazie
+            container.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const imgElement = container.querySelector('img');
+                const fallbackElement = container.querySelector('div[data-image-index]');
+                const imageIndex = imgElement?.dataset?.imageIndex || fallbackElement?.dataset?.imageIndex;
+                
+                if (imageIndex) {
+                    imagePanel.open(parseInt(imageIndex));
+                }
+            });
+
+            return container;
+        }
+    });
+
+    // 2. Setup Image Panel
+    const imagePanel = new ImagePanel();
+
+    // 3. Setup Search Manager
+    const searchManager = new SearchManager();
+
+    // 4. Setup Controls
+    const slider = document.getElementById('gridSizeSlider');
+    const thumb = document.getElementById('sliderThumbVisual');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    function updateThumbPosition() {
+        const min = parseInt(slider.min);
+        const max = parseInt(slider.max);
+        const val = parseInt(slider.value);
+
+        const percentage = (val - min) / (max - min);
+        const trackHeight = 200;
+        const thumbPos = (1 - percentage) * trackHeight;
+
+        thumb.style.top = `${thumbPos}px`;
+    }
+
+    const updateGridSizeAsync = debounce((size) => {
+        grid.setGridSize(size);
+    }, 50);
+
+    slider.addEventListener('input', (e) => {
+        updateThumbPosition();
+        updateGridSizeAsync(e.target.value);
+    });
+
+    resetBtn.addEventListener('click', () => {
+        grid.reset();
+        slider.value = 200;
+        updateThumbPosition();
+        grid.setGridSize(200);
+    });
+
+    // USUŃ TEN EVENT LISTENER (ponieważ teraz obsługujemy kliknięcia na kontenerze)
+    // document.addEventListener('click', (e) => {
+    //     // Check if clicked on image or fallback
+    //     let target = e.target;
+        
+    //     // If clicked on img
+    //     if (target.tagName === 'IMG' && target.closest('.grid-item')) {
+    //         const imageIndex = target.dataset.imageIndex;
+    //         if (imageIndex) {
+    //             imagePanel.open(parseInt(imageIndex));
+    //         }
+    //     }
+        
+    //     // If clicked on fallback div
+    //     if (target.closest('.grid-item div') && target.closest('.grid-item div').className.includes('rounded-full')) {
+    //         const fallbackDiv = target.closest('.grid-item div');
+    //         const imageIndex = fallbackDiv.dataset.imageIndex;
+    //         if (imageIndex) {
+    //             imagePanel.open(parseInt(imageIndex));
+    //         }
+    //     }
+    // });
+
+    // Initial thumb pos
+    updateThumbPosition();
+});
+    </script>
+
+</body>
+
+</html>

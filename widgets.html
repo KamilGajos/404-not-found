@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>KamUI</title>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ln-gray-25': '#F9FAFB',
+                        'ln-gray-50': '#F3F4F6',
+                        'ln-gray-100': '#F2F2F2',
+                        'ln-gray-200': '#E5E7EB',
+                        'ln-gray-300': '#D1D5DB',
+                        'ln-gray-450': '#9CA3AF',
+                        'ln-gray-500': '#6B7280',
+                        'ln-gray-600': '#4B5563',
+                        'ln-gray-800': '#1F2937',
+                        'ln-gray-900': '#111827',
+                        'ln-orange': '#F05023',
+                    },
+                    borderRadius: {
+                        '20': '20px',
+                    },
+                    boxShadow: {
+                        'ln-xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                        'ln-badge-gray': '0 0 0 1px rgba(0,0,0,0.05)',
+                        'ln-card': 'rgba(41, 41, 41, 0.04) 0px 1px 1px 0.5px, rgba(41, 41, 41, 0.02) 0px 3px 3px -1.5px, rgba(41, 41, 41, 0.04) 0px 6px 6px -3px, rgba(41, 41, 41, 0.04) 0px 0px 0px 1px',
+                        'ln-input': 'rgba(51, 51, 51, 0.06) 0px 2px 4px, rgba(61, 61, 61, 0.08) 0px -0.5px 0.5px inset',
+                        'ln-sidebar': 'rgba(0, 0, 0, 0.04) 0px 10px 30px, rgba(0, 0, 0, 0.02) 0px 1px 4px',
+                        'ln-browser': 'rgba(0, 0, 0, 0.08) 0px 25px 50px -12px, rgba(0, 0, 0, 0.03) 0px 0px 0px 1px',
+                        'ln-tag': 'rgba(0, 0, 0, 0.05) 0px 0px 0px 1px',
+                        'ln-button': 'rgba(51, 51, 51, 0.06) 0px 2px 4px, rgb(233, 233, 233) 0px 0px 0px 1px, rgba(61, 61, 61, 0.08) 0px -0.5px 0.5px inset',
+                        'ln-badge-orange': 'rgba(240, 80, 35, 0.16) 0px 0px 0px 1px, rgba(255, 255, 255, 0.64) 0px -0.5px 0.5px inset',
+                    },
+                    animation: {
+                        'hero-block': 'hero-block 0.5s ease-out forwards',
+                        'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        'hero-block': {
+                            '0%': {
+                                opacity: '0',
+                                transform: 'translateY(24px)'
+                            },
+                            '100%': {
+                                opacity: '1',
+                                transform: 'translateY(0)'
+                            },
+                        },
+                        'fade-in-up': {
+                            '0%': {
+                                opacity: '0',
+                                transform: 'translateY(20px)'
+                            },
+                            '100%': {
+                                opacity: '1',
+                                transform: 'translateY(0)'
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E5E7EB;
+            border-radius: 10px;
+        }
+
+        .ln-separator {
+            background: linear-gradient(90deg, #F2F2F2 4px, transparent 4px) 50% 50% / 8px 1px repeat-x;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 200;
+            color: #6B7280;
+            letter-spacing: -0.01em;
+            transition: all 0.15s ease-in-out;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background-color: #F9FAFB;
+            color: #F05023;
+            box-shadow: rgba(51, 51, 51, 0.04) 0px 2px 4px, rgb(242, 242, 242) 0px 0px 0px 1px;
+        }
+
+        .nav-item-active {
+            background-color: #ffffff;
+            color: #111827;
+            box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgb(233, 233, 233) 0px 0px 0px 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 200;
+            letter-spacing: -0.01em;
+            transition: all 0.15s ease-in-out;
+            position: relative;
+        }
+
+        .nav-item-active::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 20%;
+            height: 60%;
+            width: 3px;
+            background-color: #F05023;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .category-label {
+            padding: 24px 12px 8px 12px;
+            font-size: 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #9CA3AF;
+        }
+
+        .glass-footer {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        .widget-card {
+            animation: fade-in-up 0.5s ease-out forwards;
+            animation-delay: calc(var(--index, 0) * 0.1s);
+        }
+
+        .section-header {
+            animation: fade-in-up 0.5s ease-out forwards;
+        }
+
+        .browser-dot-red {
+            background: rgb(237, 106, 94);
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;
+        }
+
+        .browser-dot-yellow {
+            background: rgb(244, 191, 78);
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;
+        }
+
+        .browser-dot-green {
+            background: rgb(97, 198, 85);
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(233, 233, 233, 0.7);
+        }
+
+        .main-content-scroll {
+            height: 100vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+    </style>
+    <style>
+        @keyframes gentle-pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1.3);
+            }
+        }
+
+        .heart-pulse {
+            animation: gentle-pulse 2s ease-in-out infinite;
+        }
+    </style>
+    <style>
+        input[type="range"]::-webkit-slider-thumb {
+            box-shadow: 0 2px 6px rgba(240, 80, 35, 0.3);
+            transition: box-shadow 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            box-shadow: 0 2px 8px rgba(240, 80, 35, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #F05023;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(240, 80, 35, 0.3);
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="bg-ln-gray-50 text-ln-gray-900">
+
+    <!-- 0. FLOATING TOP MENU BAR -->
+    <nav class="fixed top-6 left-1/2 -translate-x-1/2 w-[550px] h-14 z-[100] glass-nav rounded-2xl shadow-ln-sidebar flex items-center justify-between px-6">
+        <div class="flex items-center gap-6 w-full justify-around font-medium text-[15px] text-ln-gray-500">
+            <a href="#" class="hover:text-ln-orange transition-colors">Home</a>
+            <a href="#" class="hover:text-ln-orange transition-colors">About</a>
+            <a href="#" class="text-ln-gray-900 font-bold border-b-2 border-ln-orange">Projects</a>
+            <a href="#" class="hover:text-ln-orange transition-colors">Contact</a>
+        </div>
+    </nav>
+
+    <div class="flex w-full h-screen">
+
+        <!-- 1. LEFT SIDEBAR (FIXED) -->
+        <aside class="w-[350px] h-screen p-4 pr-0 hidden lg:block flex-shrink-0">
+            <div class="flex h-full flex-col border border-[#E9E9E9] bg-white rounded-20 shadow-ln-sidebar overflow-hidden">
+                <div class="p-8">
+                    <span class="text-[22px] font-bold tracking-tight text-ln-gray-900">KamUI Library</span>
+                    <p class="text-[14px] text-ln-gray-450 uppercase tracking-widest mt-1">Master Edition</p>
+
+                </div>
+
+                <!-- Search Bar -->
+                <div class="m-4  relative">
+                    <div class="relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-ln-gray-400">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input id="search-components" type="text" placeholder="Search components..." class="w-full pl-10 pr-4 py-3 bg-ln-gray-50  rounded-xl text-sm text-ln-gray-700 placeholder-ln-gray-400 focus:outline-none focus:ring-1 focus:ring-ln-gray-300 focus:border-ln-gray-100 transition-all shadow-ln-input">
+                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <kbd class="px-2 py-1 text-xs font-mono bg-white border border-ln-gray-200 rounded-lg text-ln-gray-500 shadow-sm">⌘K</kbd>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto custom-scrollbar px-3 pb-10" style="max-height: 82vh;">
+                    <nav id="nav-components" class="space-y-1.5">
+                        <a href="#" class="nav-item-active">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>404 Error</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5z"></path>
+                            </svg>
+                            <span>Card</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                            </svg>
+                            <span>Charts</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                            <span>Chat</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Checkbox</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                            <span>Code Viewer</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                            </svg>
+                            <span>Color Picker</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <span>Combobox</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                            </svg>
+                            <span>Comments</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z"></path>
+                            </svg>
+                            <span>Container</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                            </svg>
+                            <span>Context Menu</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span>Divider</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"></path>
+                            </svg>
+                            <span>Drawer</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Empty State</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                            </svg>
+                            <span>Filters</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2zM7 8h5M7 12h8M7 16h8"></path>
+                            </svg>
+                            <span>Footer</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                            <span>Grid</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path>
+                            </svg>
+                            <span>Hero Section</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <span>Hover Card</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            <span>Input</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span>Invoice</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                            <span>Kanban</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16"></path>
+                            </svg>
+                            <span>List Item</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            <span>Loaders</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16"></path>
+                            </svg>
+                            <span>Navbar</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <span>Onboarding</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                            </svg>
+                            <span>Pagination</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                            </svg>
+                            <span>Popover</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            <span>Progress Bar</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                            </svg>
+                            <span>Range</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                            </svg>
+                            <span>Rating</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <span>Search</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                            </svg>
+                            <span>Select</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                            <span>Sidebar</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2z"></path>
+                            </svg>
+                            <span>Skeleton Loader</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                            </svg>
+                            <span>Stepper</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                            <span>Switch</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                            </svg>
+                            <span>Textarea</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Timeline</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14"></path>
+                            </svg>
+                            <span>Toggle</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Tooltip</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                            </svg>
+                            <span>Tree View</span>
+                        </a>
+
+                        <a href="#" class="nav-item">
+                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <span>User Account</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="p-4">
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-ln-gray-50">
+                        <img src="https://alignui.com/images/avatar/illustration/james.png" class="size-10 rounded-full border-2 border-white shadow-sm" alt="Avatar">
+                        <div class="flex-1">
+                            <div class="text-[14px] font-bold text-ln-gray-900">Kamil Gajos</div>
+                            <div class="text-[12px] text-ln-gray-500">System Architect</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 2. CENTER CONTENT (SCROLLABLE) -->
+        <main class="flex-1 main-content-scroll custom-scrollbar relative pt-32 pb-20">
+
+            <section id="section-404-error">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">404 Error Components</h2>
+                <div class="max-w-[90%] mx-auto">
+
+                    <!-- COMPONENT BLOCKS CONTAINER -->
+                    <div class="space-y-16">
+
+                        <!-- BLOCK 01 -->
+                        <div class="-mx-2 max-w-none md:mx-0 md:-mr-[21px] md:w-[calc(100%+21px)]">
+
+
+                            <div class="group/block-view-wrapper mt-5 md:mt-6" data-view="preview">
+                                <div class="component-preview">
+                                    <div dir="ltr">
+                                        <!-- Header Controls -->
+                                        <div class="flex items-center justify-between gap-3 pb-5 md:pb-4">
+                                            <button id="btn-404-error-01" class="flex h-9 items-center gap-1.5 rounded-[11px] bg-ln-gray-50 pl-2 pr-3 text-ln-label-sm text-ln-gray-600 shadow-ln-badge-gray focus:outline-none hover:bg-ln-gray-100 transition-colors" href="#">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" class="size-5 text-ln-gray-450">
+                                                    <g>
+                                                        <path d="M6.25,2.75h-1c-1.105,0-2,.895-2,2V14.25c0,1.105,.895,2,2,2h7.5c1.105,0,2-.895,2-2V4.75c0-1.105-.895-2-2-2h-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                                                        <rect x="6.25" y="1.25" width="5.5" height="3" rx="1" ry="1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></rect>
+                                                    </g>
+                                                </svg>
+                                                Get the code
+                                            </button>
+                                            <h2 class="text-ln-label-lg text-ln-orange [&+p]:mt-1 font-bold">
+                                                <a class="subheading-anchor" href="#404-error-01">404 Error 01</a>
+                                            </h2>
+                                            <div class="flex items-center gap-2.5">
+                                                <button id="light-dark-404-error-01" type="button" class="flex size-9 items-center justify-center rounded-[11px] bg-ln-gray-50 shadow-ln-badge-gray hover:bg-ln-gray-100">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+                                                        <path class="stroke-ln-gray-450" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="M17.708 9.843a5.417 5.417 0 0 1-7.55-7.55 7.708 7.708 0 1 0 7.55 7.55Z"></path>
+                                                    </svg>
+                                                </button>
+                                                <button id="full-screen-404-error-01" class="flex size-9 items-center justify-center rounded-[11px] bg-ln-gray-50 shadow-ln-badge-gray hover:bg-ln-gray-100" target="_blank" title="Open in New Tab" href="#">
+                                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="size-5 text-ln-gray-450">
+                                                        <path d="M8 3V5H4V9H2V3H8ZM2 21V15H4V19H8V21H2ZM22 21H16V19H20V15H22V21ZM22 9H20V5H16V3H22V9Z"></path>
+                                                    </svg>
+                                                </button>
+                                                <!-- Viewport Switcher -->
+                                                <div class="relative isolate hidden h-9 items-center rounded-[11px] px-1 bg-ln-gray-50 shadow-ln-badge-gray md:flex">
+                                                    <button id="mobile-404-error-01" type="button" class="h-7 px-2.5 text-ln-label-sm text-ln-gray-500 transition ease-out" data-width="375">Mobile</button>
+                                                    <button id="tablet-404-error-01" type="button" class="h-7 px-2.5 text-ln-label-sm text-ln-gray-500 transition ease-out" data-width="768">Tablet</button>
+                                                    <button id="desktop-404-error-01" type="button" class="h-7 px-2.5 text-ln-label-sm transition ease-out bg-white rounded-lg shadow-ln-toggle-active text-ln-gray-700" data-width="100%">Desktop</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Browser Mockup Card with Resizer -->
+                                        <div class="relative flex group/resize-container">
+                                            <!-- Main Content Container -->
+                                            <div id="resizable-container-404-error-01" class="relative z-10 overflow-hidden  flex-grow" style="width: 100%; max-width: 100%; min-width: 375px;">
+                                                <div class="p-px w-full overflow-hidden">
+                                                    <div class="w-full rounded-20 bg-ln-gray-25 ring-1 ring-ln-gray-200 xl:rounded-[28px]">
+                                                        <!-- Window dots -->
+                                                        <div class="px-4 py-3 xl:px-6">
+                                                            <div class="flex h-[18px] items-center gap-2">
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(237, 106, 94); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(244, 191, 78); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(97, 198, 85); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Iframe Container -->
+                                                        <div class="px-2 pb-2 xl:px-2.5 xl:pb-2.5">
+                                                            <div class="relative h-[800px] overflow-hidden rounded-2xl ring-1 ring-ln-gray-100 xl:rounded-20 bg-white">
+                                                                <!-- Placeholder for actual content -->
+                                                                <div class="w-full h-full flex items-center justify-center text-ln-gray-300 italic">
+                                                                    <iframe src="404-01.html" class="h-full w-full chunk-mode forced-light "></iframe>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Resize Handler (POZA kontenerem) -->
+                                            <div id="resize-handler-404-error-01" class="relative w-4 flex items-center justify-center cursor-col-resize z-30">
+                                                <div class="h-24 w-1 bg-ln-gray-300 rounded-full hover:bg-ln-orange transition-colors"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Separator -->
+                            <div class="my-12 h-1 w-full text-ln-gray-400 opacity-80 md:my-[72px]" role="separator" style="background: linear-gradient(90deg, currentcolor 4px, transparent 4px) 50% 50% / 10px 1px repeat-x;"></div>
+                        </div>
+
+                        <!-- BLOCK 02 -->
+                        <div class="-mx-2 max-w-none md:mx-0 md:-mr-[21px] md:w-[calc(100%+21px)]">
+                            <div class="group/block-view-wrapper mt-5 md:mt-6" data-view="preview">
+                                <div class="component-preview">
+                                    <div dir="ltr">
+                                        <div class="flex items-center justify-between gap-3 pb-5 md:pb-4">
+                                            <button id="btn-404-error-02" class="flex h-9 items-center gap-1.5 rounded-[11px] bg-ln-gray-50 pl-2 pr-3 text-ln-label-sm text-ln-gray-600 shadow-ln-badge-gray focus:outline-none hover:bg-ln-gray-100 transition-colors" href="#">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" class="size-5 text-ln-gray-450">
+                                                    <g>
+                                                        <path d="M6.25,2.75h-1c-1.105,0-2,.895-2,2V14.25c0,1.105,.895,2,2,2h7.5c1.105,0,2-.895,2-2V4.75c0-1.105-.895-2-2-2h-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                                                        <rect x="6.25" y="1.25" width="5.5" height="3" rx="1" ry="1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></rect>
+                                                    </g>
+                                                </svg>
+                                                Get the code
+                                            </button>
+                                            <h2 class="text-ln-label-lg text-ln-orange [&+p]:mt-1 font-bold">
+                                                <a class="subheading-anchor" href="#404-error-02">404 Error 02</a>
+                                            </h2>
+                                            <div class="flex items-center gap-2.5">
+                                                <button id="light-dark-404-error-02" type="button" class="flex size-9 items-center justify-center rounded-[11px] bg-ln-gray-50 shadow-ln-badge-gray">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+                                                        <path class="stroke-ln-gray-450" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="M17.708 9.843a5.417 5.417 0 0 1-7.55-7.55 7.708 7.708 0 1 0 7.55 7.55Z"></path>
+                                                    </svg>
+                                                </button>
+                                                <!-- Viewport Switcher -->
+                                                <div class="relative isolate hidden h-9 items-center rounded-[11px] px-1 bg-ln-gray-50 shadow-ln-badge-gray md:flex">
+                                                    <button id="mobile-404-error-02" type="button" class="h-7 px-2.5 text-ln-label-sm text-ln-gray-500 transition ease-out">Mobile</button>
+                                                    <button id="tablet-404-error-02" type="button" class="h-7 px-2.5 text-ln-label-sm text-ln-gray-500 transition ease-out">Tablet</button>
+                                                    <button id="desktop-404-error-02" type="button" class="h-7 px-2.5 text-ln-label-sm transition ease-out bg-white rounded-lg shadow-ln-toggle-active text-ln-gray-700">Desktop</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Browser Mockup Card with Resizer -->
+                                        <div class="relative flex group/resize-container">
+                                            <!-- Main Content Container -->
+                                            <div id="resizable-container-404-error-02" class="relative z-10 overflow-hidden  flex-grow" style="width: 100%; max-width: 100%; min-width: 375px;">
+                                                <div class="p-px w-full overflow-hidden">
+                                                    <div class="w-full rounded-20 bg-ln-gray-25 ring-1 ring-ln-gray-200 xl:rounded-[28px]">
+                                                        <!-- Window dots -->
+                                                        <div class="px-4 py-3 xl:px-6">
+                                                            <div class="flex h-[18px] items-center gap-2">
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(237, 106, 94); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(244, 191, 78); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(97, 198, 85); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Iframe Container -->
+                                                        <div class="px-2 pb-2 xl:px-2.5 xl:pb-2.5">
+                                                            <div class="relative h-[800px] overflow-hidden rounded-2xl ring-1 ring-ln-gray-100 xl:rounded-20 bg-white">
+                                                                <!-- Placeholder for actual content -->
+                                                                <div class="w-full h-full flex items-center justify-center text-ln-gray-300 italic">
+                                                                    <iframe src="404-02.html" class="h-full w-full chunk-mode  forced-light"></iframe>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Resize Handler (POZA kontenerem) -->
+                                            <div id="resize-handler-404-error-02" class="relative w-4 flex items-center justify-center cursor-col-resize z-30">
+                                                <div class="h-24 w-1 bg-ln-gray-300 rounded-full hover:bg-ln-orange transition-colors"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Separator -->
+                            <div class="my-12 h-1 w-full text-ln-gray-400 opacity-80 md:my-[72px]" role="separator" style="background: linear-gradient(90deg, currentcolor 4px, transparent 4px) 50% 50% / 10px 1px repeat-x;"></div>
+
+                        </div>
+                        <!-- BLOCK 03 -->
+                        <div class="-mx-2 max-w-none md:mx-0 md:-mr-[21px] md:w-[calc(100%+21px)]">
+                            <div class="group/block-view-wrapper mt-5 md:mt-6" data-view="preview">
+                                <div class="component-preview">
+                                    <div dir="ltr">
+                                        <div class="flex items-center justify-between gap-3 pb-5 md:pb-4">
+                                            <button id="btn-404-error-03" class="flex h-9 items-center gap-1.5 rounded-[11px] bg-ln-gray-50 pl-2 pr-3 text-ln-label-sm text-ln-gray-600 shadow-ln-badge-gray focus:outline-none hover:bg-ln-gray-100 transition-colors" href="#">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" class="size-5 text-ln-gray-450">
+                                                    <g>
+                                                        <path d="M6.25,2.75h-1c-1.105,0-2,.895-2,2V14.25c0,1.105,.895,2,2,2h7.5c1.105,0,2-.895,2-2V4.75c0-1.105-.895-2-2-2h-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                                                        <rect x="6.25" y="1.25" width="5.5" height="3" rx="1" ry="1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></rect>
+                                                    </g>
+                                                </svg>
+                                                Get the code
+                                            </button>
+                                            <h2 class="text-ln-label-lg text-ln-orange [&+p]:mt-1 font-bold">
+                                                <a class="subheading-anchor" href="#404-error-02">404 Error 03</a>
+                                            </h2>
+                                            <div class="flex items-center gap-2.5">
+                                                <button id="light-dark-404-error-03" type="button" class="flex size-9 items-center justify-center rounded-[11px] bg-ln-gray-50 shadow-ln-badge-gray">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+                                                        <path class="stroke-ln-gray-450" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="M17.708 9.843a5.417 5.417 0 0 1-7.55-7.55 7.708 7.708 0 1 0 7.55 7.55Z"></path>
+                                                    </svg>
+                                                </button>
+                                                <!-- Viewport Switcher -->
+                                                <div class="relative isolate hidden h-9 items-center rounded-[11px] px-1 bg-ln-gray-50 shadow-ln-badge-gray md:flex">
+                                                    <button id="mobile-404-error-03" type="button" class="h-7 px-2.5 text-ln-label-sm text-ln-gray-500 transition ease-out">Mobile</button>
+                                                    <button id="tablet-404-error-03" type="button" class="h-7 px-2.5 text-ln-label-sm text-ln-gray-500 transition ease-out">Tablet</button>
+                                                    <button id="desktop-404-error-03" type="button" class="h-7 px-2.5 text-ln-label-sm transition ease-out bg-white rounded-lg shadow-ln-toggle-active text-ln-gray-700">Desktop</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Browser Mockup Card with Resizer -->
+                                        <div class="relative flex group/resize-container">
+                                            <!-- Main Content Container -->
+                                            <div id="resizable-container-404-error-03" class="relative z-10 overflow-hidden  flex-grow" style="width: 100%; max-width: 100%; min-width: 375px;">
+                                                <div class="p-px w-full overflow-hidden">
+                                                    <div class="w-full rounded-20 bg-ln-gray-25 ring-1 ring-ln-gray-200 xl:rounded-[28px]">
+                                                        <!-- Window dots -->
+                                                        <div class="px-4 py-3 xl:px-6">
+                                                            <div class="flex h-[18px] items-center gap-2">
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(237, 106, 94); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(244, 191, 78); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(97, 198, 85); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Iframe Container -->
+                                                        <div class="px-2 pb-2 xl:px-2.5 xl:pb-2.5">
+                                                            <div class="relative h-[800px] overflow-hidden rounded-2xl ring-1 ring-ln-gray-100 xl:rounded-20 bg-white">
+                                                                <!-- Placeholder for actual content -->
+                                                                <div class="w-full h-full flex items-center justify-center text-ln-gray-300 italic">
+                                                                    <iframe src="404-03.html" class="h-full w-full chunk-mode  forced-light"></iframe>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Resize Handler (POZA kontenerem) -->
+                                            <div id="resize-handler-404-error-03" class="relative w-4 flex items-center justify-center cursor-col-resize z-30">
+                                                <div class="h-24 w-1 bg-ln-gray-300 rounded-full hover:bg-ln-orange transition-colors"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Separator -->
+                            <div class="my-12 h-1 w-full text-ln-gray-400 opacity-80 md:my-[72px]" role="separator" style="background: linear-gradient(90deg, currentcolor 4px, transparent 4px) 50% 50% / 10px 1px repeat-x;"></div>
+
+                        </div>
+                        <!-- BLOCK 04 -->
+                        <div class="-mx-2 max-w-none md:mx-0 md:-mr-[21px] md:w-[calc(100%+21px)]">
+                            <div class="group/block-view-wrapper mt-5 md:mt-6" data-view="preview">
+                                <div class="component-preview">
+                                    <div dir="ltr">
+                                        <div class="flex items-center justify-between gap-3 pb-5 md:pb-4">
+                                            <button id="btn-404-error-04" class="flex h-9 items-center gap-1.5 rounded-[11px] bg-ln-gray-50 pl-2 pr-3 text-ln-label-sm text-ln-gray-600 shadow-ln-badge-gray focus:outline-none hover:bg-ln-gray-100 transition-colors" href="#">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" class="size-5 text-ln-gray-450">
+                                                    <g>
+                                                        <path d="M6.25,2.75h-1c-1.105,0-2,.895-2,2V14.25c0,1.105,.895,2,2,2h7.5c1.105,0,2-.895,2-2V4.75c0-1.105-.895-2-2-2h-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                                                        <rect x="6.25" y="1.25" width="5.5" height="3" rx="1" ry="1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></rect>
+                                                    </g>
+                                                </svg>
+                                                Get the code
+                                            </button>
+                                            <h2 class="text-ln-label-lg text-ln-orange [&+p]:mt-1 font-bold">
+                                                <a class="subheading-anchor" href="#404-error-02">404 Error 04</a>
+                                            </h2>
+                                            <div class="flex items-center gap-2.5">
+                                                <button id="light-dark-404-error-04" type="button" class="flex size-9 items-center justify-center rounded-[11px] bg-ln-gray-50 shadow-ln-badge-gray">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+                                                        <path class="stroke-ln-gray-450" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="M17.708 9.843a5.417 5.417 0 0 1-7.55-7.55 7.708 7.708 0 1 0 7.55 7.55Z"></path>
+                                                    </svg>
+                                                </button>
+                                                <!-- Viewport Switcher -->
+                                                <div class="relative isolate hidden h-9 items-center rounded-[11px] px-1 bg-ln-gray-50 shadow-ln-badge-gray md:flex">
+                                                    <button id="mobile-404-error-04" type="button" class="h-7 px-2.5 text-ln-label-sm text-ln-gray-500 transition ease-out">Mobile</button>
+                                                    <button id="tablet-404-error-04" type="button" class="h-7 px-2.5 text-ln-label-sm text-ln-gray-500 transition ease-out">Tablet</button>
+                                                    <button id="desktop-404-error-04" type="button" class="h-7 px-2.5 text-ln-label-sm transition ease-out bg-white rounded-lg shadow-ln-toggle-active text-ln-gray-700">Desktop</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Browser Mockup Card with Resizer -->
+                                        <div class="relative flex group/resize-container">
+                                            <!-- Main Content Container -->
+                                            <div id="resizable-container-404-error-04" class="relative z-10 overflow-hidden  flex-grow" style="width: 100%; max-width: 100%; min-width: 375px;">
+                                                <div class="p-px w-full overflow-hidden">
+                                                    <div class="w-full rounded-20 bg-ln-gray-25 ring-1 ring-ln-gray-200 xl:rounded-[28px]">
+                                                        <!-- Window dots -->
+                                                        <div class="px-4 py-3 xl:px-6">
+                                                            <div class="flex h-[18px] items-center gap-2">
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(237, 106, 94); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(244, 191, 78); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                                <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(97, 198, 85); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Iframe Container -->
+                                                        <div class="px-2 pb-2 xl:px-2.5 xl:pb-2.5">
+                                                            <div class="relative h-[800px] overflow-hidden rounded-2xl ring-1 ring-ln-gray-100 xl:rounded-20 bg-white">
+                                                                <!-- Placeholder for actual content -->
+                                                                <div class="w-full h-full flex items-center justify-center text-ln-gray-300 italic">
+                                                                    <iframe src="404-04.html" class="h-full w-full chunk-mode  forced-light"></iframe>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Resize Handler (POZA kontenerem) -->
+                                            <div id="resize-handler-404-error-04" class="relative w-4 flex items-center justify-center cursor-col-resize z-30">
+                                                <div class="h-24 w-1 bg-ln-gray-300 rounded-full hover:bg-ln-orange transition-colors"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            <section id="section-card" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Card Components</h2>
+                <div class="max-w-[90%] mx-auto">
+                    <!-- BLOCK 01 -->
+                    <div class="-mx-2 max-w-none md:mx-0 md:-mr-[21px] md:w-[calc(100%+21px)]">
+
+
+                        <div class="group/block-view-wrapper mt-5 md:mt-6" data-view="preview">
+                            <div class="component-preview">
+                                <div dir="ltr">
+                                    <!-- Header Controls -->
+                                    <div class="flex items-center justify-between gap-3 pb-5 md:pb-4">
+                                        <button id="btn-card-01" class="flex h-9 items-center gap-1.5 rounded-[11px] bg-ln-gray-50 pl-2 pr-3 text-ln-label-sm text-ln-gray-600 shadow-ln-badge-gray focus:outline-none hover:bg-ln-gray-100 transition-colors" href="#">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" class="size-5 text-ln-gray-450">
+                                                <g>
+                                                    <path d="M6.25,2.75h-1c-1.105,0-2,.895-2,2V14.25c0,1.105,.895,2,2,2h7.5c1.105,0,2-.895,2-2V4.75c0-1.105-.895-2-2-2h-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                                                    <rect x="6.25" y="1.25" width="5.5" height="3" rx="1" ry="1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></rect>
+                                                </g>
+                                            </svg>
+                                            Get the code
+                                        </button>
+                                        <h2 class="text-ln-label-lg text-ln-orange [&+p]:mt-1 font-bold">
+                                            <a class="subheading-anchor" href="#404-error-01">Card 01</a>
+                                        </h2>
+                                        <div class="flex items-center gap-2.5">
+                                            <button id="light-dark-card-01" type="button" class="flex size-9 items-center justify-center rounded-[11px] bg-ln-gray-50 shadow-ln-badge-gray hover:bg-ln-gray-100">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+                                                    <path class="stroke-ln-gray-450" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="M17.708 9.843a5.417 5.417 0 0 1-7.55-7.55 7.708 7.708 0 1 0 7.55 7.55Z"></path>
+                                                </svg>
+                                            </button>
+                                            <button id="full-screen-card-01" class="flex size-9 items-center justify-center rounded-[11px] bg-ln-gray-50 shadow-ln-badge-gray hover:bg-ln-gray-100" target="_blank" title="Open in New Tab" href="#">
+                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="size-5 text-ln-gray-450">
+                                                    <path d="M8 3V5H4V9H2V3H8ZM2 21V15H4V19H8V21H2ZM22 21H16V19H20V15H22V21ZM22 9H20V5H16V3H22V9Z"></path>
+                                                </svg>
+                                            </button>
+                                            <!-- Viewport Switcher -->
+                                            <div class="relative isolate hidden h-9 items-center rounded-[11px] px-1 bg-ln-gray-50 shadow-ln-badge-gray md:flex">
+                                                <button id="mobile-card-01" type="button" class="h-7 px-2.5 text-ln-label-sm text-ln-gray-500 transition ease-out" data-width="375">Mobile</button>
+                                                <button id="tablet-card-01" type="button" class="h-7 px-2.5 text-ln-label-sm text-ln-gray-500 transition ease-out" data-width="768">Tablet</button>
+                                                <button id="desktop-card-01" type="button" class="h-7 px-2.5 text-ln-label-sm transition ease-out bg-white rounded-lg shadow-ln-toggle-active text-ln-gray-700" data-width="100%">Desktop</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Browser Mockup Card with Resizer -->
+                                    <div class="relative flex group/resize-container">
+                                        <!-- Main Content Container -->
+                                        <div id="resizable-container-card-01" class="relative z-10 overflow-hidden  flex-grow" style="width: 100%; max-width: 100%; min-width: 375px;">
+                                            <div class="p-px w-full overflow-hidden">
+                                                <div class="w-full rounded-20 bg-ln-gray-25 ring-1 ring-ln-gray-200 xl:rounded-[28px]">
+                                                    <!-- Window dots -->
+                                                    <div class="px-4 py-3 xl:px-6">
+                                                        <div class="flex h-[18px] items-center gap-2">
+                                                            <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(237, 106, 94); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                            <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(244, 191, 78); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                            <div class="size-2 rounded-full xl:size-2.5" style="background: rgb(97, 198, 85); box-shadow: rgba(0, 0, 0, 0.16) 0px 0.75px 0.75px inset;"></div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Iframe Container -->
+                                                    <div class="px-2 pb-2 xl:px-2.5 xl:pb-2.5">
+                                                        <div class="relative h-[800px] overflow-hidden rounded-2xl ring-1 ring-ln-gray-100 xl:rounded-20 bg-white">
+                                                            <!-- Placeholder for actual content -->
+                                                            <div class="w-full h-full flex items-center justify-center text-ln-gray-300 italic">
+                                                                <iframe src="card-01.html" class="h-full w-full chunk-mode forced-light "></iframe>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Resize Handler (POZA kontenerem) -->
+                                        <div id="resize-handler-card-01" class="relative w-4 flex items-center justify-center cursor-col-resize z-30">
+                                            <div class="h-24 w-1 bg-ln-gray-300 rounded-full hover:bg-ln-orange transition-colors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Separator -->
+                        <div class="my-12 h-1 w-full text-ln-gray-400 opacity-80 md:my-[72px]" role="separator" style="background: linear-gradient(90deg, currentcolor 4px, transparent 4px) 50% 50% / 10px 1px repeat-x;"></div>
+                    </div>
+                </div>
+            </section>
+            <section id="section-charts" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Charts Components</h2>
+                <div class="max-w-[90%] mx-auto">
+                </div>
+            </section>
+            <section id="section-chat" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Chat Components</h2>
+                <div class="max-w-[90%] mx-auto">
+                </div>
+            </section>
+            <section id="section-checkbox" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Checkbox Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-code-viewer" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Code Viewer Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-color-picker" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Color Picker Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-combobox" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Combobox Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-comments" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Comments Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-container" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Container Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-context-menu" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Context Menu Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-divider" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Divider Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-drawer" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Drawer Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-empty-state" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Empty State Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-filters" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Filters Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-footer" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Footer Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-grid" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Grid Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-hero-section" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Hero Section Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-hover-card" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Hover Card Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-input" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Input Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-invoice" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Invoice Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-kanban" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Kanban Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-list-item" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">List Item Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-loaders" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Loaders Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-navbar" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Navbar Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-onboarding" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Onboarding Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-pagination" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Pagination Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-popover" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Popover Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-progress-bar" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Progress Bar Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-range" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Range Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-rating" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Rating Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-search" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Search Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-select" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Select Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-sidebar" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Sidebar Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-skeleton-loader" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Skeleton Loader Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-stepper" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Stepper Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-switch" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Switch Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-textarea" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Textarea Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-timeline" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Timeline Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-toggle" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Toggle Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-tooltip" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Tooltip Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-tree-view" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">Tree View Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+
+            <section id="section-user-account" class="hidden">
+                <h2 class="text-2xl font-bold px-[5%] mb-8">User Account Components</h2>
+                <div class="max-w-[90%] mx-auto"></div>
+            </section>
+        </main>
+
+        <!-- 3. RIGHT SIDEBAR (FIXED SKELETON) -->
+        <aside id="aside-code" class="h-screen flex-shrink-0 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden hidden w-0 p-0 opacity-0">
+            <div class="flex h-full flex-col border border-[#E9E9E9] bg-white rounded-20 shadow-ln-sidebar p-6 min-w-[500px]">
+
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-bold" id="sidebar-title">Code Preview</h3>
+                    <div class="flex items-center gap-2">
+                        <button id="copyButton" class="flex h-9 items-center gap-1.5 rounded-[11px] bg-ln-gray-50 pl-2 pr-3 text-ln-label-sm text-ln-gray-600 shadow-ln-badge-gray focus:outline-none hover:bg-ln-gray-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" class="size-5 text-ln-gray-450">
+                                <path d="M6.25,2.75h-1c-1.105,0-2,.895-2,2V14.25c0,1.105,.895,2,2,2h7.5c1.105,0,2-.895,2-2V4.75c0-1.105-.895-2-2-2h-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                                <rect x="6.25" y="1.39" width="5.5" height="3" rx="1" ry="1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></rect>
+                            </svg>
+                            Copy code
+                        </button>
+                        <button id="close-sidebar" class="flex h-9 items-center justify-center rounded-[11px] bg-ln-gray-50 w-9 text-ln-gray-600 shadow-ln-badge-gray focus:outline-none hover:bg-ln-gray-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="size-5 text-ln-gray-450" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <div class="flex bg-ln-gray-50 p-1 rounded-[11px] shadow-ln-badge-gray">
+                        <button id="codeTab" class="flex-1 py-2 text-center text-sm font-medium rounded-lg transition-colors bg-white text-ln-gray-700 shadow-ln-toggle-active">
+                            Code
+                        </button>
+                        <button id="filesTab" class="flex-1 py-2 text-center text-sm font-medium rounded-lg transition-colors text-ln-gray-500 hover:text-ln-gray-700">
+                            Files
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-hidden flex flex-col mb-6">
+
+                    <div id="codeContent" class="flex-1 overflow-auto bg-ln-gray-25 rounded-xl border border-ln-gray-200 p-4 font-mono text-sm">
+                        <pre><code id="htmlCodeDisplay" class="text-ln-gray-700">Loading code...</code></pre>
+                    </div>
+
+                    <div id="filesContent" class="flex-1 overflow-auto hidden space-y-3">
+
+                        <div class="flex items-center justify-between w-full p-4 bg-white border border-ln-gray-200 rounded-xl hover:border-ln-orange/30 transition-all">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-blue-50 text-blue-500 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="16 18 22 12 16 6"></polyline>
+                                        <polyline points="8 6 2 12 8 18"></polyline>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-ln-gray-700">404-01.html</span>
+                            </div>
+                            <a href="404-01.html" download class="p-2 text-ln-gray-400 hover:text-ln-orange transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+                                    <title>download-4</title>
+                                    <g fill="currentColor">
+                                        <polyline points="14 8 10 12 6 8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline>
+                                        <line x1="10" y1="3" x2="10" y2="12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></line>
+                                        <path d="m17,13v1c0,1.657-1.343,3-3,3H6c-1.657,0-3-1.343-3-3v-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                    </g>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <div class="flex items-center justify-between w-full p-4 bg-white border border-ln-gray-200 rounded-xl hover:border-ln-orange/30 transition-all">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-purple-50 text-purple-500 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-ln-gray-700">404-01.png</span>
+                            </div>
+                            <a href="404-01.png" download class="p-2 text-ln-gray-400 hover:text-ln-orange transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+                                    <title>download-4</title>
+                                    <g fill="currentColor">
+                                        <polyline points="14 8 10 12 6 8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline>
+                                        <line x1="10" y1="3" x2="10" y2="12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></line>
+                                        <path d="m17,13v1c0,1.657-1.343,3-3,3H6c-1.657,0-3-1.343-3-3v-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                    </g>
+                                </svg> </a>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Support Project Section -->
+                <div class="mt-auto">
+                    <div class="p-4 bg-ln-orange/5 border border-ln-orange/10 rounded-2xl hover:bg-ln-orange/10 hover:border-ln-orange/20 transition-colors duration-200">
+                        <div class="flex items-start gap-3 mb-3">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-ln-orange/10">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-ln-orange heart-pulse">
+                                    <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-ln-orange">Support This Project</p>
+                                <p class="text-xs text-ln-gray-500 mt-0.5">This library is free and open source. Help keep it alive!</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <a href="#" title="Star this project on GitHub" class="flex flex-col items-center p-3 text-sm text-ln-gray-700 bg-white rounded-xl border border-ln-gray-100 hover:bg-ln-gray-25 hover:border-ln-gray-200 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-1 text-ln-gray-600">
+                                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                                </svg>
+                                <span class="text-xs font-medium">Star on GitHub</span>
+                            </a>
+
+                            <a href="#" title="Try this code on CodePen" class="flex flex-col items-center p-3 text-sm text-ln-gray-700 bg-white rounded-xl border border-ln-gray-100 hover:bg-ln-gray-25 hover:border-ln-gray-200 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" aria-label="CodePen" role="img" viewBox="0 0 512 512" width="20" height="20" fill="none" stroke="currentColor" stroke-width="25" stroke-linejoin="round" class="mb-1 text-ln-gray-600">
+                                    <g>
+                                        <path d="M81 198v116l175 117 175-117V198L256 81z"></path>
+                                        <path d="M81 198l175 116 175-116M256 81v117"></path>
+                                        <path d="M81 314l175-116 175 116M256 431V314"></path>
+                                    </g>
+                                </svg>
+                                <span class="text-xs font-medium">CodePen</span>
+                            </a>
+                        </div>
+
+                        <button title="Make a donation to support development" class="w-full py-2 bg-ln-orange text-white rounded-xl text-sm font-bold shadow-lg shadow-ln-orange/20 hover:bg-orange-600 transition-colors flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="heart-pulse">
+                                <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
+                            </svg>
+                            Donate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CENTRALNY REJESTR KOMPONENTÓW
+        // To jest jedyne miejsce, które uzupełniasz!
+        // ==========================================
+        const COMPONENT_REGISTRY = {
+            '404-error-01': {
+                name: '404 Error 01',
+                files: [{
+                        name: '404-01.html',
+                        type: 'code'
+                    },
+                    {
+                        name: '404-01.png',
+                        type: 'image'
+                    }
+                ]
+            },
+            '404-error-02': {
+                name: '404 Error 02',
+                files: [{
+                        name: '404-02.html',
+                        type: 'code'
+                    },
+                    {
+                        name: '404-02.png',
+                        type: 'image'
+                    }
+                ]
+            },
+            '404-error-03': {
+                name: '404 Error 03',
+                files: [{
+                        name: '404-03.html',
+                        type: 'code'
+                    },
+                    {
+                        name: '404-03.png',
+                        type: 'image'
+                    }
+                ]
+            },
+            '404-error-04': {
+                name: '404 Error 04',
+                files: [{
+                        name: '404-04.html',
+                        type: 'code'
+                    },
+                    {
+                        name: '404-04.png',
+                        type: 'image'
+                    }
+                ]
+            },
+            'card-01': {
+                name: 'Card 01',
+                files: [{
+                    name: 'card-01.html',
+                    type: 'code'
+                }, {
+                    name: 'card-01.png',
+                    type: 'image'
+                }]
+            },
+            'card-02': {
+                name: 'Card 02',
+                files: [{
+                    name: 'card-02.html',
+                    type: 'code'
+                }, {
+                    name: 'card-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Charts
+            'charts-01': {
+                name: 'Charts 01',
+                files: [{
+                    name: 'charts-01.html',
+                    type: 'code'
+                }, {
+                    name: 'charts-01.png',
+                    type: 'image'
+                }]
+            },
+            'charts-02': {
+                name: 'Charts 02',
+                files: [{
+                    name: 'charts-02.html',
+                    type: 'code'
+                }, {
+                    name: 'charts-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Chat
+            'chat-01': {
+                name: 'Chat 01',
+                files: [{
+                    name: 'chat-01.html',
+                    type: 'code'
+                }, {
+                    name: 'chat-01.png',
+                    type: 'image'
+                }]
+            },
+            'chat-02': {
+                name: 'Chat 02',
+                files: [{
+                    name: 'chat-02.html',
+                    type: 'code'
+                }, {
+                    name: 'chat-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Checkbox
+            'checkbox-01': {
+                name: 'Checkbox 01',
+                files: [{
+                    name: 'checkbox-01.html',
+                    type: 'code'
+                }, {
+                    name: 'checkbox-01.png',
+                    type: 'image'
+                }]
+            },
+            'checkbox-02': {
+                name: 'Checkbox 02',
+                files: [{
+                    name: 'checkbox-02.html',
+                    type: 'code'
+                }, {
+                    name: 'checkbox-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Code Viewer
+            'code-viewer-01': {
+                name: 'Code Viewer 01',
+                files: [{
+                    name: 'code-viewer-01.html',
+                    type: 'code'
+                }, {
+                    name: 'code-viewer-01.png',
+                    type: 'image'
+                }]
+            },
+            'code-viewer-02': {
+                name: 'Code Viewer 02',
+                files: [{
+                    name: 'code-viewer-02.html',
+                    type: 'code'
+                }, {
+                    name: 'code-viewer-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Color Picker
+            'color-picker-01': {
+                name: 'Color Picker 01',
+                files: [{
+                    name: 'color-picker-01.html',
+                    type: 'code'
+                }, {
+                    name: 'color-picker-01.png',
+                    type: 'image'
+                }]
+            },
+            'color-picker-02': {
+                name: 'Color Picker 02',
+                files: [{
+                    name: 'color-picker-02.html',
+                    type: 'code'
+                }, {
+                    name: 'color-picker-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Combobox
+            'combobox-01': {
+                name: 'Combobox 01',
+                files: [{
+                    name: 'combobox-01.html',
+                    type: 'code'
+                }, {
+                    name: 'combobox-01.png',
+                    type: 'image'
+                }]
+            },
+            'combobox-02': {
+                name: 'Combobox 02',
+                files: [{
+                    name: 'combobox-02.html',
+                    type: 'code'
+                }, {
+                    name: 'combobox-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Comments
+            'comments-01': {
+                name: 'Comments 01',
+                files: [{
+                    name: 'comments-01.html',
+                    type: 'code'
+                }, {
+                    name: 'comments-01.png',
+                    type: 'image'
+                }]
+            },
+            'comments-02': {
+                name: 'Comments 02',
+                files: [{
+                    name: 'comments-02.html',
+                    type: 'code'
+                }, {
+                    name: 'comments-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Container
+            'container-01': {
+                name: 'Container 01',
+                files: [{
+                    name: 'container-01.html',
+                    type: 'code'
+                }, {
+                    name: 'container-01.png',
+                    type: 'image'
+                }]
+            },
+            'container-02': {
+                name: 'Container 02',
+                files: [{
+                    name: 'container-02.html',
+                    type: 'code'
+                }, {
+                    name: 'container-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Context Menu
+            'context-menu-01': {
+                name: 'Context Menu 01',
+                files: [{
+                    name: 'context-menu-01.html',
+                    type: 'code'
+                }, {
+                    name: 'context-menu-01.png',
+                    type: 'image'
+                }]
+            },
+            'context-menu-02': {
+                name: 'Context Menu 02',
+                files: [{
+                    name: 'context-menu-02.html',
+                    type: 'code'
+                }, {
+                    name: 'context-menu-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Divider
+            'divider-01': {
+                name: 'Divider 01',
+                files: [{
+                    name: 'divider-01.html',
+                    type: 'code'
+                }, {
+                    name: 'divider-01.png',
+                    type: 'image'
+                }]
+            },
+            'divider-02': {
+                name: 'Divider 02',
+                files: [{
+                    name: 'divider-02.html',
+                    type: 'code'
+                }, {
+                    name: 'divider-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Drawer
+            'drawer-01': {
+                name: 'Drawer 01',
+                files: [{
+                    name: 'drawer-01.html',
+                    type: 'code'
+                }, {
+                    name: 'drawer-01.png',
+                    type: 'image'
+                }]
+            },
+            'drawer-02': {
+                name: 'Drawer 02',
+                files: [{
+                    name: 'drawer-02.html',
+                    type: 'code'
+                }, {
+                    name: 'drawer-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Empty State
+            'empty-state-01': {
+                name: 'Empty State 01',
+                files: [{
+                    name: 'empty-state-01.html',
+                    type: 'code'
+                }, {
+                    name: 'empty-state-01.png',
+                    type: 'image'
+                }]
+            },
+            'empty-state-02': {
+                name: 'Empty State 02',
+                files: [{
+                    name: 'empty-state-02.html',
+                    type: 'code'
+                }, {
+                    name: 'empty-state-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Filters
+            'filters-01': {
+                name: 'Filters 01',
+                files: [{
+                    name: 'filters-01.html',
+                    type: 'code'
+                }, {
+                    name: 'filters-01.png',
+                    type: 'image'
+                }]
+            },
+            'filters-02': {
+                name: 'Filters 02',
+                files: [{
+                    name: 'filters-02.html',
+                    type: 'code'
+                }, {
+                    name: 'filters-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Footer
+            'footer-01': {
+                name: 'Footer 01',
+                files: [{
+                    name: 'footer-01.html',
+                    type: 'code'
+                }, {
+                    name: 'footer-01.png',
+                    type: 'image'
+                }]
+            },
+            'footer-02': {
+                name: 'Footer 02',
+                files: [{
+                    name: 'footer-02.html',
+                    type: 'code'
+                }, {
+                    name: 'footer-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Grid
+            'grid-01': {
+                name: 'Grid 01',
+                files: [{
+                    name: 'grid-01.html',
+                    type: 'code'
+                }, {
+                    name: 'grid-01.png',
+                    type: 'image'
+                }]
+            },
+            'grid-02': {
+                name: 'Grid 02',
+                files: [{
+                    name: 'grid-02.html',
+                    type: 'code'
+                }, {
+                    name: 'grid-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Hero Section
+            'hero-section-01': {
+                name: 'Hero Section 01',
+                files: [{
+                    name: 'hero-section-01.html',
+                    type: 'code'
+                }, {
+                    name: 'hero-section-01.png',
+                    type: 'image'
+                }]
+            },
+            'hero-section-02': {
+                name: 'Hero Section 02',
+                files: [{
+                    name: 'hero-section-02.html',
+                    type: 'code'
+                }, {
+                    name: 'hero-section-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Hover Card
+            'hover-card-01': {
+                name: 'Hover Card 01',
+                files: [{
+                    name: 'hover-card-01.html',
+                    type: 'code'
+                }, {
+                    name: 'hover-card-01.png',
+                    type: 'image'
+                }]
+            },
+            'hover-card-02': {
+                name: 'Hover Card 02',
+                files: [{
+                    name: 'hover-card-02.html',
+                    type: 'code'
+                }, {
+                    name: 'hover-card-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Input
+            'input-01': {
+                name: 'Input 01',
+                files: [{
+                    name: 'input-01.html',
+                    type: 'code'
+                }, {
+                    name: 'input-01.png',
+                    type: 'image'
+                }]
+            },
+            'input-02': {
+                name: 'Input 02',
+                files: [{
+                    name: 'input-02.html',
+                    type: 'code'
+                }, {
+                    name: 'input-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Invoice
+            'invoice-01': {
+                name: 'Invoice 01',
+                files: [{
+                    name: 'invoice-01.html',
+                    type: 'code'
+                }, {
+                    name: 'invoice-01.png',
+                    type: 'image'
+                }]
+            },
+            'invoice-02': {
+                name: 'Invoice 02',
+                files: [{
+                    name: 'invoice-02.html',
+                    type: 'code'
+                }, {
+                    name: 'invoice-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Kanban
+            'kanban-01': {
+                name: 'Kanban 01',
+                files: [{
+                    name: 'kanban-01.html',
+                    type: 'code'
+                }, {
+                    name: 'kanban-01.png',
+                    type: 'image'
+                }]
+            },
+            'kanban-02': {
+                name: 'Kanban 02',
+                files: [{
+                    name: 'kanban-02.html',
+                    type: 'code'
+                }, {
+                    name: 'kanban-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // List Item
+            'list-item-01': {
+                name: 'List Item 01',
+                files: [{
+                    name: 'list-item-01.html',
+                    type: 'code'
+                }, {
+                    name: 'list-item-01.png',
+                    type: 'image'
+                }]
+            },
+            'list-item-02': {
+                name: 'List Item 02',
+                files: [{
+                    name: 'list-item-02.html',
+                    type: 'code'
+                }, {
+                    name: 'list-item-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Loaders
+            'loaders-01': {
+                name: 'Loaders 01',
+                files: [{
+                    name: 'loaders-01.html',
+                    type: 'code'
+                }, {
+                    name: 'loaders-01.png',
+                    type: 'image'
+                }]
+            },
+            'loaders-02': {
+                name: 'Loaders 02',
+                files: [{
+                    name: 'loaders-02.html',
+                    type: 'code'
+                }, {
+                    name: 'loaders-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Navbar
+            'navbar-01': {
+                name: 'Navbar 01',
+                files: [{
+                    name: 'navbar-01.html',
+                    type: 'code'
+                }, {
+                    name: 'navbar-01.png',
+                    type: 'image'
+                }]
+            },
+            'navbar-02': {
+                name: 'Navbar 02',
+                files: [{
+                    name: 'navbar-02.html',
+                    type: 'code'
+                }, {
+                    name: 'navbar-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Onboarding
+            'onboarding-01': {
+                name: 'Onboarding 01',
+                files: [{
+                    name: 'onboarding-01.html',
+                    type: 'code'
+                }, {
+                    name: 'onboarding-01.png',
+                    type: 'image'
+                }]
+            },
+            'onboarding-02': {
+                name: 'Onboarding 02',
+                files: [{
+                    name: 'onboarding-02.html',
+                    type: 'code'
+                }, {
+                    name: 'onboarding-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Pagination
+            'pagination-01': {
+                name: 'Pagination 01',
+                files: [{
+                    name: 'pagination-01.html',
+                    type: 'code'
+                }, {
+                    name: 'pagination-01.png',
+                    type: 'image'
+                }]
+            },
+            'pagination-02': {
+                name: 'Pagination 02',
+                files: [{
+                    name: 'pagination-02.html',
+                    type: 'code'
+                }, {
+                    name: 'pagination-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Popover
+            'popover-01': {
+                name: 'Popover 01',
+                files: [{
+                    name: 'popover-01.html',
+                    type: 'code'
+                }, {
+                    name: 'popover-01.png',
+                    type: 'image'
+                }]
+            },
+            'popover-02': {
+                name: 'Popover 02',
+                files: [{
+                    name: 'popover-02.html',
+                    type: 'code'
+                }, {
+                    name: 'popover-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Progress Bar
+            'progress-bar-01': {
+                name: 'Progress Bar 01',
+                files: [{
+                    name: 'progress-bar-01.html',
+                    type: 'code'
+                }, {
+                    name: 'progress-bar-01.png',
+                    type: 'image'
+                }]
+            },
+            'progress-bar-02': {
+                name: 'Progress Bar 02',
+                files: [{
+                    name: 'progress-bar-02.html',
+                    type: 'code'
+                }, {
+                    name: 'progress-bar-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Range
+            'range-01': {
+                name: 'Range 01',
+                files: [{
+                    name: 'range-01.html',
+                    type: 'code'
+                }, {
+                    name: 'range-01.png',
+                    type: 'image'
+                }]
+            },
+            'range-02': {
+                name: 'Range 02',
+                files: [{
+                    name: 'range-02.html',
+                    type: 'code'
+                }, {
+                    name: 'range-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Rating
+            'rating-01': {
+                name: 'Rating 01',
+                files: [{
+                    name: 'rating-01.html',
+                    type: 'code'
+                }, {
+                    name: 'rating-01.png',
+                    type: 'image'
+                }]
+            },
+            'rating-02': {
+                name: 'Rating 02',
+                files: [{
+                    name: 'rating-02.html',
+                    type: 'code'
+                }, {
+                    name: 'rating-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Search
+            'search-01': {
+                name: 'Search 01',
+                files: [{
+                    name: 'search-01.html',
+                    type: 'code'
+                }, {
+                    name: 'search-01.png',
+                    type: 'image'
+                }]
+            },
+            'search-02': {
+                name: 'Search 02',
+                files: [{
+                    name: 'search-02.html',
+                    type: 'code'
+                }, {
+                    name: 'search-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Select
+            'select-01': {
+                name: 'Select 01',
+                files: [{
+                    name: 'select-01.html',
+                    type: 'code'
+                }, {
+                    name: 'select-01.png',
+                    type: 'image'
+                }]
+            },
+            'select-02': {
+                name: 'Select 02',
+                files: [{
+                    name: 'select-02.html',
+                    type: 'code'
+                }, {
+                    name: 'select-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Sidebar
+            'sidebar-01': {
+                name: 'Sidebar 01',
+                files: [{
+                    name: 'sidebar-01.html',
+                    type: 'code'
+                }, {
+                    name: 'sidebar-01.png',
+                    type: 'image'
+                }]
+            },
+            'sidebar-02': {
+                name: 'Sidebar 02',
+                files: [{
+                    name: 'sidebar-02.html',
+                    type: 'code'
+                }, {
+                    name: 'sidebar-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Skeleton Loader
+            'skeleton-loader-01': {
+                name: 'Skeleton Loader 01',
+                files: [{
+                    name: 'skeleton-loader-01.html',
+                    type: 'code'
+                }, {
+                    name: 'skeleton-loader-01.png',
+                    type: 'image'
+                }]
+            },
+            'skeleton-loader-02': {
+                name: 'Skeleton Loader 02',
+                files: [{
+                    name: 'skeleton-loader-02.html',
+                    type: 'code'
+                }, {
+                    name: 'skeleton-loader-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Stepper
+            'stepper-01': {
+                name: 'Stepper 01',
+                files: [{
+                    name: 'stepper-01.html',
+                    type: 'code'
+                }, {
+                    name: 'stepper-01.png',
+                    type: 'image'
+                }]
+            },
+            'stepper-02': {
+                name: 'Stepper 02',
+                files: [{
+                    name: 'stepper-02.html',
+                    type: 'code'
+                }, {
+                    name: 'stepper-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Switch
+            'switch-01': {
+                name: 'Switch 01',
+                files: [{
+                    name: 'switch-01.html',
+                    type: 'code'
+                }, {
+                    name: 'switch-01.png',
+                    type: 'image'
+                }]
+            },
+            'switch-02': {
+                name: 'Switch 02',
+                files: [{
+                    name: 'switch-02.html',
+                    type: 'code'
+                }, {
+                    name: 'switch-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Textarea
+            'textarea-01': {
+                name: 'Textarea 01',
+                files: [{
+                    name: 'textarea-01.html',
+                    type: 'code'
+                }, {
+                    name: 'textarea-01.png',
+                    type: 'image'
+                }]
+            },
+            'textarea-02': {
+                name: 'Textarea 02',
+                files: [{
+                    name: 'textarea-02.html',
+                    type: 'code'
+                }, {
+                    name: 'textarea-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Timeline
+            'timeline-01': {
+                name: 'Timeline 01',
+                files: [{
+                    name: 'timeline-01.html',
+                    type: 'code'
+                }, {
+                    name: 'timeline-01.png',
+                    type: 'image'
+                }]
+            },
+            'timeline-02': {
+                name: 'Timeline 02',
+                files: [{
+                    name: 'timeline-02.html',
+                    type: 'code'
+                }, {
+                    name: 'timeline-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Toggle
+            'toggle-01': {
+                name: 'Toggle 01',
+                files: [{
+                    name: 'toggle-01.html',
+                    type: 'code'
+                }, {
+                    name: 'toggle-01.png',
+                    type: 'image'
+                }]
+            },
+            'toggle-02': {
+                name: 'Toggle 02',
+                files: [{
+                    name: 'toggle-02.html',
+                    type: 'code'
+                }, {
+                    name: 'toggle-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Tooltip
+            'tooltip-01': {
+                name: 'Tooltip 01',
+                files: [{
+                    name: 'tooltip-01.html',
+                    type: 'code'
+                }, {
+                    name: 'tooltip-01.png',
+                    type: 'image'
+                }]
+            },
+            'tooltip-02': {
+                name: 'Tooltip 02',
+                files: [{
+                    name: 'tooltip-02.html',
+                    type: 'code'
+                }, {
+                    name: 'tooltip-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // Tree View
+            'tree-view-01': {
+                name: 'Tree View 01',
+                files: [{
+                    name: 'tree-view-01.html',
+                    type: 'code'
+                }, {
+                    name: 'tree-view-01.png',
+                    type: 'image'
+                }]
+            },
+            'tree-view-02': {
+                name: 'Tree View 02',
+                files: [{
+                    name: 'tree-view-02.html',
+                    type: 'code'
+                }, {
+                    name: 'tree-view-02.png',
+                    type: 'image'
+                }]
+            },
+
+            // User Account
+            'user-account-01': {
+                name: 'User Account 01',
+                files: [{
+                    name: 'user-account-01.html',
+                    type: 'code'
+                }, {
+                    name: 'user-account-01.png',
+                    type: 'image'
+                }]
+            },
+            'user-account-02': {
+                name: 'User Account 02',
+                files: [{
+                    name: 'user-account-02.html',
+                    type: 'code'
+                }, {
+                    name: 'user-account-02.png',
+                    type: 'image'
+                }]
+            }
+        };
+
+        // Stałe konfiguracyjne
+        const ICONS = {
+            code: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>`,
+            image: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`,
+            download: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`
+        };
+
+        const PRESETS = {
+            mobile: 375,
+            tablet: 768,
+            desktop: '100%'
+        };
+
+        // ==========================================
+        // 2. KLASA RESIZERA (ZMODYFIKOWANA)
+        // ==========================================
+        class ComponentResizer {
+            constructor(id) {
+                this.id = id;
+                this.container = document.getElementById(`resizable-container-${id}`);
+                this.handler = document.getElementById(`resize-handler-${id}`);
+                this.btns = {
+                    mobile: document.getElementById(`mobile-${id}`),
+                    tablet: document.getElementById(`tablet-${id}`),
+                    desktop: document.getElementById(`desktop-${id}`)
+                };
+                this.isResizing = false;
+                if (this.container && this.handler) this.init();
+            }
+
+            init() {
+                this.setWidth(PRESETS.desktop);
+                this.handler.addEventListener('mousedown', (e) => this.startResizing(e));
+                this.handler.addEventListener('touchstart', (e) => this.startResizing(e, true));
+                this.handler.addEventListener('dblclick', () => this.setWidth(PRESETS.desktop));
+
+                if (this.btns.mobile) this.btns.mobile.addEventListener('click', () => this.setWidth(PRESETS.mobile));
+                if (this.btns.tablet) this.btns.tablet.addEventListener('click', () => this.setWidth(PRESETS.tablet));
+                if (this.btns.desktop) this.btns.desktop.addEventListener('click', () => this.setWidth(PRESETS.desktop));
+            }
+
+            startResizing(e, isTouch = false) {
+                this.isResizing = true;
+                this.startX = isTouch ? e.touches[0].clientX : e.clientX;
+                this.startWidth = this.container.offsetWidth;
+
+                const move = (e) => this.handleMove(e, isTouch);
+                const stop = () => {
+                    this.isResizing = false;
+                    document.removeEventListener(isTouch ? 'touchmove' : 'mousemove', move);
+                    document.body.style.cursor = '';
+                };
+
+                document.addEventListener(isTouch ? 'touchmove' : 'mousemove', move);
+                document.addEventListener(isTouch ? 'touchend' : 'mouseup', stop);
+                document.body.style.cursor = 'col-resize';
+            }
+
+            handleMove(e, isTouch) {
+                if (!this.isResizing) return;
+                const currentX = isTouch ? e.touches[0].clientX : e.clientX;
+                const newWidth = Math.max(375, Math.min(this.startWidth + (currentX - this.startX), 1600));
+                this.setWidth(newWidth);
+            }
+
+            setWidth(width) {
+                const val = width === '100%' ? '100%' : `${width}px`;
+                this.container.style.width = val;
+                this.container.style.maxWidth = val;
+                this.updateUI(width);
+            }
+
+            updateUI(width) {
+                Object.keys(this.btns).forEach(key => {
+                    const btn = this.btns[key];
+                    if (!btn) return;
+                    const isActive = (key === 'desktop' && width === '100%') || (PRESETS[key] === width);
+                    btn.classList.toggle('bg-white', isActive);
+                    btn.classList.toggle('shadow-ln-toggle-active', isActive);
+                    btn.classList.toggle('text-ln-gray-700', isActive);
+                    btn.classList.toggle('text-ln-gray-500', !isActive);
+                });
+            }
+        }
+
+        // ==========================================
+        // 3. LOGIKA SIDEBARA I NAWIGACJI
+        // ==========================================
+        const UI = {
+            aside: document.getElementById('aside-code'),
+            codeDisplay: document.querySelector('#codeContent code'),
+            filesContainer: document.getElementById('filesContent'),
+
+            async openSidebar(key) {
+                const config = COMPONENT_REGISTRY[key];
+                if (!config) return;
+
+                document.querySelector('#aside-code h3').textContent = config.name;
+
+                // Animacja wejścia
+                this.aside.classList.remove('hidden');
+                void this.aside.offsetWidth; // reflow
+                this.aside.classList.replace('w-0', 'w-[550px]');
+                this.aside.classList.replace('opacity-0', 'opacity-100');
+                this.aside.classList.add('p-4');
+
+                this.switchTab('code');
+
+                // Pobieranie kodu
+                const htmlFile = config.files.find(f => f.type === 'code');
+                this.codeDisplay.textContent = "Loading...";
+                try {
+                    const res = await fetch(htmlFile.name);
+                    this.codeDisplay.textContent = await res.text();
+                } catch {
+                    this.codeDisplay.textContent = "// Error loading " + htmlFile.name;
+                }
+
+                // Lista plików
+                this.filesContainer.innerHTML = config.files.map(f => `
+                <div class="flex items-center justify-between p-4 bg-white border border-ln-gray-200 rounded-xl mb-2">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 ${f.type === 'code' ? 'bg-blue-50 text-blue-500' : 'bg-purple-50 text-purple-500'} rounded-lg">${ICONS[f.type]}</div>
+                        <span class="text-sm font-medium text-ln-gray-700">${f.name}</span>
+                    </div>
+                    <a href="${f.name}" download class="p-2 text-ln-gray-400 hover:text-ln-orange">${ICONS.download}</a>
+                </div>
+            `).join('');
+            },
+
+            closeSidebar() {
+                this.aside.classList.replace('w-[550px]', 'w-0');
+                this.aside.classList.replace('opacity-100', 'opacity-0');
+                this.aside.classList.remove('p-4');
+                setTimeout(() => this.aside.classList.add('hidden'), 500);
+            },
+
+            switchTab(tab) {
+                const isCode = tab === 'code';
+                document.getElementById('codeTab').className = isCode ? 'flex-1 py-2 text-center text-sm font-medium rounded-lg bg-white text-ln-gray-700 shadow-ln-toggle-active' : 'flex-1 py-2 text-center text-sm font-medium rounded-lg text-ln-gray-500';
+                document.getElementById('filesTab').className = !isCode ? 'flex-1 py-2 text-center text-sm font-medium rounded-lg bg-white text-ln-gray-700 shadow-ln-toggle-active' : 'flex-1 py-2 text-center text-sm font-medium rounded-lg text-ln-gray-500';
+                document.getElementById('codeContent').classList.toggle('hidden', !isCode);
+                document.getElementById('filesContent').classList.toggle('hidden', isCode);
+                document.getElementById('copyButton').classList.toggle('hidden', !isCode);
+            }
+        };
+
+        // ==========================================
+        // 4. INICJALIZACJA (DOM CONTENT LOADED)
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // A. Inicjalizacja Resizerów na podstawie Rejestru
+            const resizers = {};
+            Object.keys(COMPONENT_REGISTRY).forEach(id => {
+                resizers[id] = new ComponentResizer(id);
+            });
+
+            // B. Nawigacja (Lewy Sidebar)
+            const navItems = document.querySelectorAll('#nav-components a');
+            const sections = document.querySelectorAll('main > section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const label = item.querySelector('span')?.textContent;
+                    if (!label) return;
+                    const sectionId = `section-${label.toLowerCase().trim().replace(/\s+/g, '-')}`;
+                    const target = document.getElementById(sectionId);
+
+                    if (target) {
+                        sections.forEach(s => s.classList.add('hidden'));
+                        target.classList.remove('hidden');
+                        navItems.forEach(n => n.classList.replace('nav-item-active', 'nav-item'));
+                        item.classList.replace('nav-item', 'nav-item-active');
+                    }
+                });
+            });
+
+            // C. Wyszukiwarka
+            const searchInput = document.getElementById('search-components');
+            searchInput?.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('#nav-components .nav-item, #nav-components .nav-item-active').forEach(item => {
+                    const text = item.querySelector('span').textContent.toLowerCase();
+                    item.style.display = text.includes(term) ? 'flex' : 'none';
+                });
+                document.querySelectorAll('.category-label').forEach(label => {
+                    label.style.display = term === '' ? 'block' : 'none';
+                });
+            });
+
+            // D. Globalna delegacja kliknięć
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('[id^="btn-"]');
+                if (btn) UI.openSidebar(btn.id.replace('btn-', ''));
+
+                if (e.target.closest('#close-sidebar')) UI.closeSidebar();
+            });
+
+            // E. Taby i Kopiowanie
+            document.getElementById('codeTab')?.addEventListener('click', () => UI.switchTab('code'));
+            document.getElementById('filesTab')?.addEventListener('click', () => UI.switchTab('files'));
+            document.getElementById('copyButton')?.addEventListener('click', function() {
+                navigator.clipboard.writeText(UI.codeDisplay.textContent).then(() => {
+                    const old = this.innerHTML;
+                    this.innerHTML = '<span class="text-ln-orange">Copied!</span>';
+                    setTimeout(() => this.innerHTML = old, 2000);
+                });
+            });
+        });
+        
+    </script>
+</body>
+
+</html>

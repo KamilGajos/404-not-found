@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preload" href="404.png" as="image" type="image/png">
+    <style>
+        :root {
+            --t-primary: #1a1a1a;
+            --t-secondary: #666666;
+            --b-surface2: #f5f5f5;
+            --s-stroke2: #e0e0e0;
+        }
+
+        .text-h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .text-h2 {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .text-title-lg {
+            font-size: 1.25rem;
+            line-height: 1.4;
+            font-weight: 400;
+        }
+
+        .text-heading-str {
+            font-size: 0.9375rem;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .text-secondary {
+            color: var(--t-secondary);
+        }
+
+        .center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .size-161\.5 {
+            width: 40.375rem;
+            height: 40.375rem;
+        }
+
+        .size-132 {
+            width: 33rem;
+            height: 33rem;
+        }
+
+        .size-80 {
+            width: 20rem;
+            height: 20rem;
+        }
+
+        .max-w-115 {
+            max-width: 28.75rem;
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem;
+        }
+
+        .shadow-custom {
+            box-shadow:
+                0 3px 4px -1px rgba(0, 0, 0, 0.15),
+                inset 0px 1px 0px 0px rgba(255, 255, 255, 0.33),
+                0px 0px 0px 1px #D4D4D4;
+        }
+
+        .bg-gradient-custom {
+            background: linear-gradient(to bottom, #E5E5E5, #E2E2E2);
+        }
+
+        /* Animations */
+        @keyframes gentleBounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .animate-gentle-bounce {
+            animation: gentleBounce 3s ease-in-out infinite;
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .text-h1 {
+                font-size: 2.25rem;
+            }
+
+            .text-h2 {
+                font-size: 1.875rem;
+            }
+
+            .text-title-lg {
+                font-size: 1.125rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-b-surface2">
+    <div class="pb-16">
+        <div class="center text-center min-h-screen">
+            <!-- Image container -->
+            <div class="-mt-20 pl-16 max-md:-mt-10 max-md:pl-10">
+                <div class="inline-block align-top opacity-100 size-161.5 max-2xl:size-132 max-md:size-80 flex items-center justify-center hover-lift">
+                    <div class="relative w-full h-full flex items-center justify-center">
+                        <img src="404-01.png" alt="404 Illustration - Cute character looking lost" width="646" height="646" class="max-w-full max-h-full object-contain animate-gentle-bounce" loading="eager" decoding="async" onload="this.style.opacity = '1'" style="opacity: 0; transition: opacity 0.5s ease;" onerror="this.style.display = 'none'; document.querySelector('.image-container').innerHTML = '<div class=\'text-6xl font-bold text-gray-300\'>404</div>'">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div class="relative z-2 max-w-115 -mt-6 mx-auto mb-4 text-h1 max-md:text-h2 text-t-primary">
+                Uh-oh... I think I took a wrong turn.
+            </div>
+
+            <!-- Home button -->
+            <a href="#" class="relative inline-flex justify-center items-center h-10 px-6 rounded-xl text-heading-str bg-gradient-custom shadow-custom after:absolute after:inset-0 after:rounded-xl after:bg-white/30 after:opacity-0 after:transition-opacity hover:after:opacity-100 cursor-pointer hover:scale-[1.02] transition-transform">
+                <div class="relative z-2 flex items-center gap-2 text-t-primary">
+                    <!-- Home icon -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Go to Dashboard
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>
